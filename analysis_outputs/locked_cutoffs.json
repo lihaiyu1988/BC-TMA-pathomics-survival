@@ -1,0 +1,32 @@
+{
+ "kaplan_meier_cutoffs_partial_hazard": {
+  "Clinical": 1.03,
+  "Pathomics": 0.8,
+  "Combined": 1.03
+ },
+ "kaplan_meier_median_cutoffs_train": {
+  "Clinical": 1.076,
+  "Pathomics": 0.613,
+  "Combined": 0.634
+ },
+ "patch_level_youden_thresholds_train": {
+  "ResNet18": 0.142,
+  "ResNet50": 0.164,
+  "DenseNet121": 0.155,
+  "CrossFormer": 0.147
+ },
+ "pathomics_signature": [
+  "BoW_prob(0.50)  [prob05]",
+  "BoW_prob(0.58)  [prob058]",
+  "BoW_pred(1)  [pred1]"
+ ],
+ "feature_selection": {
+  "correlation_filter_abs_r": 0.8,
+  "univariable_cox_p": 0.05,
+  "elastic_net_l1_ratio": 0.1,
+  "cv_folds": 10,
+  "matched_complexity_k": 3
+ },
+ "random_seed": 42,
+ "split": "patient-level 7:3, train 194 / test 84"
+}

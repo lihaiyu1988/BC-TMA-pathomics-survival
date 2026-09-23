@@ -1,0 +1,31 @@
+Model,Cohort,Horizon,AUC,events,n
+"Clinical-original (age, N, AJCC) on complete cases",train,5 y,0.677,26,182
+"Clinical-original (age, N, AJCC) on complete cases",train,7 y,0.725,39,179
+"Clinical-original (age, N, AJCC) on complete cases",train,9 y,0.733,49,176
+"Clinical-original (age, N, AJCC) on complete cases",test,5 y,0.766,4,73
+"Clinical-original (age, N, AJCC) on complete cases",test,7 y,0.822,6,72
+"Clinical-original (age, N, AJCC) on complete cases",test,9 y,0.832,6,65
+"Clinical-guideline (age, AJCC, ER, PR, HER2, grade)",train,5 y,0.727,26,182
+"Clinical-guideline (age, AJCC, ER, PR, HER2, grade)",train,7 y,0.756,39,179
+"Clinical-guideline (age, AJCC, ER, PR, HER2, grade)",train,9 y,0.778,49,176
+"Clinical-guideline (age, AJCC, ER, PR, HER2, grade)",test,5 y,0.815,4,73
+"Clinical-guideline (age, AJCC, ER, PR, HER2, grade)",test,7 y,0.854,6,72
+"Clinical-guideline (age, AJCC, ER, PR, HER2, grade)",test,9 y,0.873,6,65
+Pathomics (deployed),train,5 y,0.962,26,182
+Pathomics (deployed),train,7 y,0.807,39,179
+Pathomics (deployed),train,9 y,0.749,49,176
+Pathomics (deployed),test,5 y,0.75,4,73
+Pathomics (deployed),test,7 y,0.785,6,72
+Pathomics (deployed),test,9 y,0.797,6,65
+Combined-original (deployed),train,5 y,0.975,26,182
+Combined-original (deployed),train,7 y,0.892,39,179
+Combined-original (deployed),train,9 y,0.847,49,176
+Combined-original (deployed),test,5 y,0.764,4,73
+Combined-original (deployed),test,7 y,0.838,6,72
+Combined-original (deployed),test,9 y,0.847,6,65
+Combined-guideline (guideline clinical + pathomics),train,5 y,0.972,26,182
+Combined-guideline (guideline clinical + pathomics),train,7 y,0.888,39,179
+Combined-guideline (guideline clinical + pathomics),train,9 y,0.861,49,176
+Combined-guideline (guideline clinical + pathomics),test,5 y,0.819,4,73
+Combined-guideline (guideline clinical + pathomics),test,7 y,0.871,6,72
+Combined-guideline (guideline clinical + pathomics),test,9 y,0.887,6,65

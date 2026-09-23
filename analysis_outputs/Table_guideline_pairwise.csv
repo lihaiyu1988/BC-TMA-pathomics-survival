@@ -1,0 +1,11 @@
+﻿Cohort,Comparison,delta C,p
+train,"Combined-guideline (guideline clinical + pathomics) vs Clinical-guideline (age, AJCC, ER, PR, HER2, grade)",0.106,0.001
+test,"Combined-guideline (guideline clinical + pathomics) vs Clinical-guideline (age, AJCC, ER, PR, HER2, grade)",0.025,0.4324
+train,"Clinical-guideline (age, AJCC, ER, PR, HER2, grade) vs Clinical-original (age, N, AJCC) on complete cases",0.04,0.132
+test,"Clinical-guideline (age, AJCC, ER, PR, HER2, grade) vs Clinical-original (age, N, AJCC) on complete cases",0.043,0.343
+train,Combined-guideline (guideline clinical + pathomics) vs Pathomics (deployed),0.085,0.006
+test,Combined-guideline (guideline clinical + pathomics) vs Pathomics (deployed),0.048,0.3694
+train,Combined-guideline (guideline clinical + pathomics) vs Combined-original (deployed),0.012,0.454
+test,Combined-guideline (guideline clinical + pathomics) vs Combined-original (deployed),0.031,0.4642
+train,"Pathomics (deployed) vs Clinical-guideline (age, AJCC, ER, PR, HER2, grade)",0.023,0.658
+test,"Pathomics (deployed) vs Clinical-guideline (age, AJCC, ER, PR, HER2, grade)",-0.023,0.7832

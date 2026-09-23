@@ -1,0 +1,24 @@
+Comparison,"delta C (pathomics, test)",p
+ResNet50 | PLH only | k=3 | allIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,-0.017,0.225
+ResNet50 | BoW only | k=3 | allIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,0.0,2.0
+ResNet50 | PLH+BoW | CV | allIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,-0.066,0.196
+ResNet50 | PLH only | CV | allIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,-0.097,0.185
+ResNet50 | BoW only | CV | allIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,-0.066,0.188
+ResNet50 | PLH+BoW | k=3 | trainIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,0.001,1.206
+ResNet50 | PLH only | k=3 | trainIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,-0.016,0.264
+ResNet50 | BoW only | k=3 | trainIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,0.001,1.189
+ResNet50 | PLH+BoW | CV | trainIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,-0.055,0.301
+ResNet50 | PLH only | CV | trainIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,-0.093,0.182
+ResNet50 | BoW only | CV | trainIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,-0.055,0.293
+ResNet18 | PLH+BoW | k=3 | allIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,-0.085,0.186
+ResNet18 | PLH only | k=3 | allIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,-0.129,0.061
+ResNet18 | BoW only | k=3 | allIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,-0.081,0.21
+ResNet18 | PLH+BoW | CV | allIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,-0.247,0.067
+DenseNet121 | PLH+BoW | k=3 | allIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,-0.046,0.39
+DenseNet121 | PLH only | k=3 | allIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,-0.046,0.516
+DenseNet121 | BoW only | k=3 | allIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,-0.047,0.394
+DenseNet121 | PLH+BoW | CV | allIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,-0.132,0.239
+CrossFormer | PLH+BoW | k=3 | allIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,-0.09,0.257
+CrossFormer | PLH only | k=3 | allIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,-0.069,0.389
+CrossFormer | BoW only | k=3 | allIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,-0.088,0.271
+CrossFormer | PLH+BoW | CV | allIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,-0.168,0.088

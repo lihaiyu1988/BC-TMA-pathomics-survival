@@ -1,0 +1,5 @@
+Configuration,C train,C test,test 95% CI
+Full signature (BoW_prob_0.50 + BoW_prob_0.58 + BoW_pred_1),0.767,0.765,0.658-0.876
+Remove prob058,0.76,0.737,0.604-0.861
+Remove prob05,0.768,0.723,0.578-0.858
+Remove pred1,0.742,0.742,0.576-0.893
