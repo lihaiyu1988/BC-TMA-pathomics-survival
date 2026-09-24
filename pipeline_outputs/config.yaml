@@ -1,0 +1,41 @@
+ml_models: 
+#  - LR
+ - SVM
+#  - XGBoost
+#  - LightGBM
+#  - RandomForest
+ - ExtraTrees
+#  - MLP
+data_root: D:\20250416-LiHaiYu
+# clinic_file: data\ClinicalData.csv
+
+clinic_file: D:\20250416-LiHaiYu\Clinical.csv
+# label_file: split_info/label-RND-9.csv
+auto__label_file: 
+  - split_info/label-RND-0.csv
+  - split_info/label-RND-1.csv
+  - split_info/label-RND-2.csv
+  - split_info/label-RND-3.csv
+  - split_info/label-RND-4.csv
+  - split_info/label-RND-5.csv
+  - split_info/label-RND-6.csv
+  - split_info/label-RND-7.csv
+  - split_info/label-RND-8.csv
+  - split_info/label-RND-9.csv
+# label_file: D:\20250416-LiHaiYu\split_info\Survival-RND-1.csv
+label_file: sur.csv
+subsets: [train, test]
+label_mapping: 
+  0: non-Recurrence
+  1: Recurrence
+metric_spec: AUC
+metric_spec_ids: 
+metric_spec_agg: mean
+DISABLE_VIDEO: True
+event_col: event
+duration_col: duration
+compare_models: [Clinical, Pathomics, Combined, ]
+sel_model:
+  Clinical: SVM
+  PathSemi: SVM
+  PathFull: ExtraTrees

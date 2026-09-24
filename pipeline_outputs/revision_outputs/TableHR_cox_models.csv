@@ -1,0 +1,8 @@
+Model,Variable,beta,HR,HR 95% CI,p
+Clinical,age,0.032,1.033,1.010-1.056,0.00391
+Clinical,AJCC,0.83,2.294,1.483-3.550,0.000192
+Pathomics,prob058,0.321,1.379,1.123-1.693,0.00213
+Pathomics,prob05,0.507,1.661,1.325-2.081,1.05e-05
+Pathomics,pred1,0.58,1.787,1.457-2.190,2.38e-08
+Combined,Clinical,-0.029,0.971,0.955-0.987,0.000415
+Combined,Pathomics,-0.04,0.961,0.953-0.969,8.62e-20

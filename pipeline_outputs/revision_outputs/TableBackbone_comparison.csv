@@ -1,0 +1,9 @@
+Backbone,Cohort,n,WSI AUC,Accuracy
+ResNet18,train,193,0.997,0.876
+ResNet18,test,81,0.685,0.963
+ResNet50,train,193,0.978,0.855
+ResNet50,test,81,0.679,0.951
+DenseNet121,train,193,0.989,0.865
+DenseNet121,test,81,0.718,0.951
+CrossFormer (Transformer/attention),train,193,0.778,0.855
+CrossFormer (Transformer/attention),test,81,0.76,0.951

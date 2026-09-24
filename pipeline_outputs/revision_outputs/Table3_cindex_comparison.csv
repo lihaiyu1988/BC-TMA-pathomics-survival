@@ -1,0 +1,7 @@
+Cohort,Comparison,delta_C,p
+train,Combined vs Clinical,0.15,0.0005
+train,Combined vs Pathomics,0.067,0.014
+train,Pathomics vs Clinical,0.084,0.11
+test,Combined vs Clinical,0.024,0.454
+test,Combined vs Pathomics,0.067,0.2704
+test,Pathomics vs Clinical,-0.041,0.6103
