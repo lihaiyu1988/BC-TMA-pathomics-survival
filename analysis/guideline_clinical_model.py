@@ -1,3 +1,4 @@
+import os
 # -*- coding: utf-8 -*-
 """Guideline-level clinical model (age, AJCC stage, ER, PR, HER2, grade) and its fusion with the pathomics signature.
 Also: extended Table 1, univariable HRs, test-set nested likelihood-ratio test, time-dependent AUC, bootstrap comparisons."""
@@ -9,9 +10,10 @@ from lifelines.utils import concordance_index
 from scipy import stats
 from sklearn.metrics import roc_auc_score
 
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # repository root
 DATA = 'pipeline_outputs'; OUT = 'analysis_outputs'
 RNG = np.random.default_rng(42)
-cl = pd.read_csv(f'{OUT}/clinical_guideline_278.csv')
+cl = pd.read_csv('clinical/clinical_guideline_278.csv')
 cl['grade3'] = (cl['grade'] == 3).astype(float); cl.loc[cl['grade'].isna(), 'grade3'] = np.nan
 cl['HER2pos'] = cl['HER2']          # distributed table: HER2 = positivity (FISH first, otherwise IHC 3+)
 sur = pd.read_csv(f'{DATA}/sur.csv').set_index('ID')
@@ -103,7 +105,7 @@ cph_g = fit_cox(tr, G_VARS); evaluate('Clinical-guideline (age, AJCC, ER, PR, HE
 multi = cph_g.summary[['coef', 'exp(coef)', 'exp(coef) lower 95%', 'exp(coef) upper 95%', 'p']].round(4).reset_index()
 multi.columns = ['Variable', 'beta', 'HR', 'HR lower 95%', 'HR upper 95%', 'p']; multi.to_csv(f'{OUT}/Table_guideline_multivariable.csv', index=False); print(multi.to_string())
 cph_a = fit_cox(tr, ALT_VARS); evaluate('Clinical-guideline alt (age, T, N, ER, PR, HER2, grade)', cph_a, ALT_VARS, tr, te)
-# original deployed clinical model restricted to the same complete cases (age, N, AJCC as deployed)
+# original clinical model specification (age, N, AJCC), refitted on the same complete cases (Table 5 caption)
 cph_o = fit_cox(tr, ['N', 'AJCC', 'age']); evaluate('Clinical-original (age, N, AJCC) on complete cases', cph_o, ['N', 'AJCC', 'age'], tr, te)
 # pathomics (deployed signature) on the same patients: use saved partial hazards
 risk_store['Pathomics (deployed)'] = (hr_tr['Pathomics'].loc[tr.index], hr_te['Pathomics'].loc[te.index])

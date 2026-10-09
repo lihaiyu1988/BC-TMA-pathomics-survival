@@ -21,7 +21,7 @@ mf.OUT = FIG
 
 G = fl.Grid(2, 3, aspect=[0.8, 1.0])
 # A: C-index in the development training cohort, the internal test cohort and TCGA-BRCA
-ci = pd.read_csv('pipeline_outputs/revision_outputs/Table3_cindex_CI.csv')
+ci = pd.read_csv(f'{A}/Table3_cindex_CI.csv')                  # Table 3a (deployed_models.py)
 g = pd.read_csv(f'{A}/Table_guideline_models.csv').set_index('Model').loc['Clinical-guideline (age, AJCC, ER, PR, HER2, grade)']
 cl_tr = ci[(ci.Model == 'Clinical') & (ci.Cohort == 'train')].iloc[0]; cl_te = ci[(ci.Model == 'Clinical') & (ci.Cohort == 'test')].iloc[0]
 rng = lambda s: tuple(float(v) for v in str(s).replace('–', '-').split('-'))

@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 """Re-implementation of the patch-to-slide pathomics pipeline (PLH + BoW/TF-IDF -> z-score on train ->
 correlation filter |r|>0.8 -> univariable Cox p<0.05 -> elastic-net Cox (l1_ratio 0.1, 10-fold CV) -> Cox PH).
-Used for: backbone sensitivity (ResNet18/50, DenseNet121, CrossFormer), PLH/BoW ablation, and IDF-on-train check."""
-import sys, warnings, numpy as np, pandas as pd
+Used for: backbone sensitivity (ResNet18/50, DenseNet121, CrossFormer), PLH/BoW ablation, and IDF-on-train check.
+Predicted label: the deployed pipeline used the classifier's predicted class (argmax). The four per-encoder files hold only
+the class probabilities, so load_backbone() uses 1[probability >= 0.5], which differs from the argmax only for the few
+patches whose stored probability is exactly 0.500 (4-17 per file; none for CrossFormer). Run as a script, this module
+reproduces the 206 deployed features of all 291 patients exactly from the deployed ResNet50 predictions and labels
+(results/ALL_DL_PREDICTIONS.csv) and exports the fixed document-frequency vector."""
+import os, sys, warnings, numpy as np, pandas as pd
 warnings.filterwarnings('ignore')
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.model_selection import KFold
@@ -11,6 +16,7 @@ from sksurv.util import Surv
 from lifelines import CoxPHFitter
 from lifelines.utils import concordance_index
 
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # repository root
 DATA = "pipeline_outputs"
 SUR = pd.read_csv(f"{DATA}/sur.csv").set_index('ID')
 BINS = [round(i/100, 2) for i in range(101)]
@@ -37,7 +43,7 @@ def load_backbone(model):
 
 def corr_filter(X, thr=0.8):
     corr = X.corr('pearson').abs(); keep = []
-    for f in list(X.columns)[::-1]:        # same greedy order as the original implementation (later columns retained)
+    for f in list(X.columns)[::-1]:        # greedy, later columns retained; on the deployed features this keeps 96 features (95 in the original run)
         if all(corr.loc[f, k] <= thr for k in keep): keep.append(f)
     return keep[::-1]
 
@@ -47,7 +53,7 @@ def uni_screen(df, feats, p=0.05):
         try:
             c = CoxPHFitter(penalizer=0.0).fit(df[[f, 'duration', 'event']], 'duration', 'event')
             if c.summary['p'].iloc[0] < p: out.append(f)
-        except Exception:
+        except Exception:                  # e.g. ConvergenceError (three BoW bins of the deployed features): the feature is dropped
             pass
     return out
 
@@ -101,14 +107,31 @@ def run_pipeline(feat, tag, branch=None, force_k=None, seed=42, verbose=True):
 
 if __name__ == '__main__':
     sys.stdout.reconfigure(encoding='utf-8')
-    # validation: reproduce saved ResNet50 features
-    f50 = aggregate(load_backbone('resnet50'))
-    saved = pd.read_csv(f"{DATA}/features/prob_tfidf.csv").set_index('ID')
-    common = f50.index.intersection(saved.index); print('BoW reproduction (274 pts, IDF differs slightly from 291-pt run) max diff:', np.abs(f50.loc[common, 'BoW_prob_0.50'] - saved.loc[common, 'prob05']).max().round(4))
+    # 1) the aggregation code reproduces the 206 deployed features of all 291 patients exactly (deployed ResNet50 predictions)
+    dl = pd.read_csv(f"{DATA}/results/ALL_DL_PREDICTIONS.csv")
+    feat = aggregate(pd.DataFrame({'ID': dl['ID'], 'prob': dl['label-1'].round(2), 'pred': dl['pred_label']}))
+    ph = pd.read_csv(f"{DATA}/features/prob_histogram.csv").set_index('ID').loc[feat.index]; pdh = pd.read_csv(f"{DATA}/features/pred_histogram.csv").set_index('ID').loc[feat.index]
+    pt = pd.read_csv(f"{DATA}/features/prob_tfidf.csv").set_index('ID').loc[feat.index]; pdt = pd.read_csv(f"{DATA}/features/pred_tfidf.csv").set_index('ID').loc[feat.index]
+    pairs = {'PLH probability bins': (feat[[f'PLH_prob_{b:.2f}' for b in BINS]].values, ph.values),
+             'PLH predicted-label bins': (feat[['PLH_pred_0', 'PLH_pred_1']].values, pdh[['pred-0', 'pred-1']].values),
+             'BoW probability bins': (feat[[f'BoW_prob_{b:.2f}' for b in BINS]].values, pt.values),
+             'BoW predicted-label bins': (feat[['BoW_pred_0', 'BoW_pred_1']].values, pdt[['pred0', 'pred1']].values)}
+    for k, (a, b) in pairs.items():
+        d = float(np.abs(a - b).max()); print(f'{k}: {a.shape[0]} patients x {a.shape[1]} features, max |re-implemented - deployed| = {d:.1e}'); assert d < 1e-9
+    # 2) the fixed document-frequency vector (291 patients) and its smoothed IDF weights ln[(1+N)/(1+df)] + 1
+    p = dl.assign(prob=dl['label-1'].round(2))
+    Cp = p.groupby(['ID', 'prob']).size().unstack(fill_value=0).reindex(columns=BINS, fill_value=0)
+    Cl = p.groupby(['ID', 'pred_label']).size().unstack(fill_value=0).reindex(columns=[0, 1], fill_value=0)
+    n = len(Cp); dfv = pd.concat([(Cp > 0).sum(), (Cl > 0).sum()])
+    dfv.index = [f'BoW_prob({b:.2f})' for b in BINS] + ['BoW_pred(0)', 'BoW_pred(1)']
+    out = pd.DataFrame({'feature': dfv.index, 'document_frequency': dfv.values, 'idf': np.log((1 + n) / (1 + dfv.values)) + 1, 'n_patients': n})
+    out.to_csv('analysis_outputs/document_frequencies_291.csv', index=False); print('document frequencies over', n, 'patients -> analysis_outputs/document_frequencies_291.csv')
+    # 3) deployed signature and the re-implemented selection on the ResNet50 patch predictions
     print('deployed signature C-index (from saved files):')
     ptr = pd.read_csv(f"{DATA}/features/Pathomics_train_cox.csv"); pte = pd.read_csv(f"{DATA}/features/Pathomics_test_cox.csv")
     cph = CoxPHFitter().fit(ptr[['prob058','prob05','pred1','duration','event']], 'duration','event')
     print('  train', round(cph.concordance_index_,3), 'test', round(concordance_index(pte.duration, -cph.predict_partial_hazard(pte).values, pte.event),3))
+    f50 = aggregate(load_backbone('resnet50'))
     print('--- CV-selected alpha, ResNet50 (all patients IDF) ---')
     run_pipeline(f50, 'ResNet50 CV')
     print('--- matched complexity k=3 ---')

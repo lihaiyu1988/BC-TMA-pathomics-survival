@@ -168,4 +168,5 @@ m['status_ok'] = (m.event == m.status_raw); print('status agree', m.status_ok.su
 print('duration vs raw os (abs diff <=1 mo):', ((m.duration - m.os_raw).abs() <= 1).sum(), '/', m.os_raw.notna().sum())
 ex = ['J07A0946', 'J07A0980', 'J07A0987', 'J07A0999', 'J07A1023', 'J07A1076', 'J07A1098', 'J07A3073', 'J07A3081', 'J07A3093', 'J07A3112', 'J07A3159', 'J07A3171']
 print('Excluded 13:'); print(pt[pt.ID.isin(ex)][['ID', 'set', 'age', 'T', 'N', 'AJCC', 'grade', 'ER', 'PR', 'HER2', 'status_raw', 'os_raw']].to_string())
-m.to_csv(f"{OUT}/clinical_guideline_278.csv", index=False, encoding='utf-8-sig')
+m.to_csv(f"{OUT}/clinical_guideline_278_from_raw.csv", index=False, encoding='utf-8-sig')   # needs the raw sheets (not distributed);
+# clinical/clinical_guideline_278.csv is this table without the free-text columns, with HER2_raw renamed HER2 and set renamed TMA_set

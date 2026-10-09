@@ -1,0 +1,7 @@
+Cohort,Model,median cut-off (training partial hazard),High-risk n (events),Low-risk n (events),log-rank p
+train,Clinical,1.076,98 (39),96 (16),0.00033476997495831954
+test,Clinical,1.076,39 (9),45 (1),0.0028587243252554627
+train,Pathomics,0.613,97 (40),97 (15),2.5959606751425494e-05
+test,Pathomics,0.613,36 (8),48 (2),0.010430661413777116
+train,Combined,0.634,97 (46),97 (9),7.067793528509329e-10
+test,Combined,0.634,35 (9),49 (1),0.0007321025344780971

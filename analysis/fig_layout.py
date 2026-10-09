@@ -12,6 +12,7 @@ Layout rules (author's figure standard, 2026-10-09):
 A panel box is the tight box around everything a panel draws (title, axis and tick labels, legend, at-risk table,
 letter); the boxes of a row share the row's top and bottom bands and the boxes of a column share its left and right
 bands, so the gap between neighboring boxes is exactly GAP_CM everywhere."""
+import sys
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
@@ -24,7 +25,7 @@ DPI = 600
 WIDTH_CM, GAP_CM, MARGIN_CM = 15.0, 0.3, 0.5
 LETTER_PT, TITLE_PT, LABEL_PT, TICK_PT, LEGEND_PT, ANNOT_PT = 10, 8, 8, 7, 7, 7
 LW_DATA, LW_REF, LW_AXES = 1.0, 0.6, 0.6
-STYLE = {'font.family': 'Arial', 'font.size': LABEL_PT, 'axes.titlesize': TITLE_PT, 'axes.labelsize': LABEL_PT,
+STYLE = {'font.family': ['Arial', 'Liberation Sans', 'Helvetica', 'DejaVu Sans'], 'font.size': LABEL_PT, 'axes.titlesize': TITLE_PT, 'axes.labelsize': LABEL_PT,
          'xtick.labelsize': TICK_PT, 'ytick.labelsize': TICK_PT, 'legend.fontsize': LEGEND_PT, 'legend.title_fontsize': LEGEND_PT,
          'axes.linewidth': LW_AXES, 'xtick.major.width': LW_AXES, 'ytick.major.width': LW_AXES, 'xtick.major.size': 2.5,
          'ytick.major.size': 2.5, 'xtick.major.pad': 1.5, 'ytick.major.pad': 1.5, 'axes.titlepad': 3.0, 'axes.labelpad': 2.0,
@@ -34,6 +35,13 @@ STYLE = {'font.family': 'Arial', 'font.size': LABEL_PT, 'axes.titlesize': TITLE_
          'legend.borderpad': 0.2, 'legend.labelspacing': 0.3, 'savefig.dpi': DPI, 'figure.dpi': 100,
          'mathtext.fontset': 'custom', 'mathtext.rm': 'Arial', 'mathtext.it': 'Arial:italic', 'mathtext.bf': 'Arial:bold'}
 rcParams.update(STYLE)
+from matplotlib import font_manager as _fm
+try:
+    _fm.findfont('Arial', fallback_to_default=False); STRICT = True     # the paper's figures were drawn with Arial
+except ValueError:
+    STRICT = False
+    print('fig_layout: Arial not found - figures are drawn with a fallback font; numbers are unaffected, but text widths differ '
+          'from the paper, so layout problems are reported as warnings instead of errors', file=sys.stderr)
 
 
 def _texts(fig):
@@ -50,6 +58,11 @@ def _texts(fig):
         leg = ax.get_legend()
         if leg is not None: out += list(leg.get_texts()) + [leg.get_title()]
     return [t for t in out if t.get_visible() and t.get_text().strip()]
+
+
+def _report(msg):
+    if STRICT: raise AssertionError(msg)
+    print('fig_layout warning:', msg, file=sys.stderr)
 
 
 class Grid:
@@ -180,14 +193,14 @@ class Grid:
                 a, b = items[i][1], items[j][1]
                 if a.x0 + tol_px < b.x1 and b.x0 + tol_px < a.x1 and a.y0 + tol_px < b.y1 and b.y0 + tol_px < a.y1:
                     bad.append((items[i][0], items[j][0]))
-        assert not bad, f'overlapping text items: {bad[:6]}'
+        if bad: _report(f'overlapping text items: {bad[:6]}')
         cm = lambda v: v / dpi / CM
         for name, e in items:
             x0, x1 = cm(e.x0), cm(e.x1); y0, y1 = H - cm(e.y1), H - cm(e.y0)
             hg = lay['gap'] / 2
             inside = any(bx - hg <= x0 and x1 <= bx + bw + hg and by - hg <= y0 and y1 <= by + bh + hg
                          for bx, by, bw, bh in lay['boxes'].values())
-            assert inside, f'text outside every panel box: {name!r}'
+            if not inside: _report(f'text outside every panel box: {name!r}')
 
 
 def at_risk_table(ax, fitters, labels, ticks, header='At risk', fontsize=TICK_PT):

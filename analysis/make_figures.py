@@ -7,6 +7,8 @@ Outputs -> analysis_outputs/figures/ (+ figure_layout_metrics.csv)"""
 import os, sys, warnings, numpy as np, pandas as pd
 warnings.filterwarnings('ignore')
 sys.stdout.reconfigure(encoding='utf-8')
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # repository root
 import fig_layout as fl                      # sets the final-size type scale and line widths (rcParams)
 import matplotlib.pyplot as plt
 from sklearn.metrics import roc_auc_score, roc_curve
@@ -71,13 +73,16 @@ def boot_auc(y, s, nb=2000):
 # ------------------------------------------------------------------ Figure 2: patch-level ROC, 4 backbones
 def fig_patch_roc():
     alldl = pd.read_csv(f'{DATA}/results/ALL_DL_PREDICTIONS.csv'); gt = alldl.groupby('ID')['gt'].first()
+    t2 = pd.read_csv('analysis_outputs/Table2_patch_level_4backbones.csv')     # Table 2 (patch_level_metrics.py): same AUCs, its CIs are shown
     G = fl.Grid(1, 2, aspect=1.0)
     for i, (c, title) in enumerate([('train', 'Training cohort (patch level)'), ('test', 'Test cohort (patch level)')]):
         ax = G.ax[0][i]
         for m, disp in [('resnet18', 'ResNet18'), ('resnet50', 'ResNet50'), ('densenet121', 'DenseNet121'), ('CrossFormer', 'CrossFormer')]:
             d = pd.read_csv(f'{DATA}/results/Pathomics_Slice_{m}_{c}.csv'); y = d['ID'].map(gt).values; s = d['label-1'].values
-            fpr, tpr, _ = roc_curve(y, s); auc = roc_auc_score(y, s); lo, hi = boot_auc(y, s, nb=300)
-            ax.plot(fpr, tpr, color=COL[disp], label=f'{disp} {auc:.3f} ({lo:.3f}–{hi:.3f})')
+            fpr, tpr, _ = roc_curve(y, s); auc = roc_auc_score(y, s)
+            boot_auc(y, s, nb=300)      # kept only so that the random-number stream, and hence the Table 6 CIs below, stay as published
+            r2 = t2[(t2.Backbone == disp) & (t2.Cohort == c)].iloc[0]; assert round(auc, 3) == r2['AUC'], (disp, c)
+            ax.plot(fpr, tpr, color=COL[disp], label=f"{disp} {auc:.3f} ({r2['95% CI'].replace('-', '\u2013')})")
         roc_axes(ax); ax.set_title(title); fl.legend_below(ax, title='AUC (95% CI)')
     save(G, 'Figure2_patch_ROC')
 
@@ -168,7 +173,7 @@ def fig_supp():
     ax.hist(d, bins=40, color='#9ecae1', edgecolor='white', linewidth=0.3); ax.axvline(0.124, color='#d62728', lw=fl.LW_DATA, label='Observed split (+0.124)')
     ax.set_ylim(0, np.histogram(d, bins=40)[0].max() * 1.25)
     ax.set_xlabel('Test C-index minus training C-index\n(clinical model)'); ax.set_ylabel('Number of random splits'); ax.legend(loc='upper left')
-    ax.set_title('1000 random stratified 7:3 splits')
+    ax.set_title('1000 random 194/84 splits')         # deaths fixed at those of the actual split (55/10), split_sensitivity.py
     ax = G.ax[0][1]
     ax.scatter(a[:, 0], a[:, 1], s=5, alpha=0.4, color='#6baed6', linewidths=0); ax.scatter([0.683], [0.807], color='#d62728', s=20, zorder=5, label='Observed split')
     ax.plot([0.5, 0.95], [0.5, 0.95], 'k--', lw=fl.LW_REF); ax.set_xlabel('Training C-index'); ax.set_ylabel('Test C-index'); ax.legend(loc='upper left')
@@ -206,7 +211,6 @@ def fig_supp():
     save(G, 'FigureS3_guideline_forest')
 
 if __name__ == '__main__':
-    if os.path.exists(f'{OUT}/figure_layout_metrics.csv'): os.remove(f'{OUT}/figure_layout_metrics.csv')
     print('Figure 2 ...'); fig_patch_roc()
     print('Figure 5 ...'); fig_km()
     print('Figures 7/8 ...'); fig_tdroc()

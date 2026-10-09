@@ -1,0 +1,15 @@
+Characteristic,Training (n=194),Hold-out (n=97),p,Test
+Age (years),54.94 ± 12.46,53.79 ± 12.20,0.3762371496442132,Mann-Whitney U
+Lymph nodes examined,12.77 ± 4.55,13.45 ± 5.46,0.4499263985082984,Mann-Whitney U
+Positive lymph nodes,2.54 ± 3.94,2.49 ± 3.35,0.7967424361398434,Mann-Whitney U
+T category,,,0.5044576177934958,chi-square
+N category,,,0.9788410071076932,chi-square
+AJCC stage (6th ed.),,,0.883517311141441,chi-square
+Histological grade,,,0.017146682006841454,chi-square
+ER status,,,0.6846772455583925,chi-square
+PR status,,,0.10904679370406518,chi-square
+HER2 status,,,0.09749512235876708,chi-square
+Surrogate subtype,,,0.19741229493327078,chi-square
+TMA set,,,0.9669124554610793,chi-square
+Overall-survival event,,,0.14009801696208898,chi-square
+Follow-up (months),105.89 ± 35.70,109.75 ± 31.48,0.7194526573252709,Mann-Whitney U

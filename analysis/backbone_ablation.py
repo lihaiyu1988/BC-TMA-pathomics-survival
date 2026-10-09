@@ -2,10 +2,11 @@
 """Backbone sensitivity (ResNet18/ResNet50/DenseNet121/CrossFormer), PLH/BoW ablation at matched complexity,
 IDF-on-train-only sensitivity, leave-one-out, and Combined (late-fusion) models for every backbone.
 All analyses use the 274 patients with saved patch predictions for all four backbones (193 train / 81 test)."""
-import sys, warnings, json, numpy as np, pandas as pd
+import os, sys, warnings, json, numpy as np, pandas as pd
 warnings.filterwarnings('ignore')
 sys.stdout.reconfigure(encoding='utf-8')
-sys.path.insert(0, 'analysis_outputs')
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # repository root
+sys.path.insert(0, 'analysis')
 from pathomics_pipeline import aggregate, load_backbone, run_pipeline, SUR, DATA
 from lifelines import CoxPHFitter
 from lifelines.utils import concordance_index

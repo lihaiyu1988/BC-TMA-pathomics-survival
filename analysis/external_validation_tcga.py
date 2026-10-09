@@ -187,7 +187,13 @@ def reviewed_grade(path):
     g['grade'] = np.where(total <= 5, 1, np.where(total <= 7, 2, 3))
     return g.groupby('id')['grade'].max()            # several slides per patient: highest grade, as in the development cohort
 GRADE_FILE = os.environ.get('TCGA_GRADE_FILE', '')
+if GRADE_FILE and not os.path.exists(GRADE_FILE):
+    sys.exit(f'TCGA_GRADE_FILE={GRADE_FILE!r} does not exist (Data S2 of Thennavan et al. 2021, mmc3.xlsx)')
 rg = reviewed_grade(GRADE_FILE)
+if GRADE_FILE and rg is None:
+    sys.exit(f'TCGA_GRADE_FILE={GRADE_FILE!r} could not be read as Data S2 (an HTML page saved instead of the xlsx file?)')
+if not GRADE_FILE:
+    print('TCGA_GRADE_FILE not set: grade is imputed from the development data (sensitivity analysis only, not the primary analysis)')
 if rg is not None:
     df['grade3_reviewed'] = df.index.map(lambda b: np.nan if b not in rg.index else float(rg[b] == 3))
 # development-data imputation of grade 3 (sensitivity analysis / fallback)
@@ -254,7 +260,7 @@ if __name__ == '__main__' and os.environ.get('RUN_EXTERNAL', '1') == '1':
     per.index.name = 'bcr_patient_barcode'
     per.to_csv(f'{OUT}/tcga_brca_external_cohort.csv', encoding='utf-8-sig')
     json.dump({'clinical_coef': cph_clin.params_.to_dict(), 'guideline_coef': cph_g.params_.to_dict(), 'cut_clinical': CUT_CLIN,
-               'cut_guideline_training_median': CUT_G, 'grade_file': GRADE_FILE or None,
+               'cut_guideline_training_median': CUT_G, 'grade_file': 'Data S2 of Thennavan et al., Cell Genomics 2021 (mmc3.xlsx)' if rg is not None else None,
                'imputation_model': dict(zip(['intercept'] + IMP, [float(imp.intercept_[0])] + [float(v) for v in imp.coef_[0]]))},
               open(f'{OUT}/frozen_models.json', 'w'), indent=1)
     with pd.option_context('display.width', 250, 'display.max_columns', 40):

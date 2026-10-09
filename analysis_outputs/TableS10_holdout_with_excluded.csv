@@ -1,0 +1,7 @@
+Set,n,deaths,Model,C-index,95% CI,Comparison,delta_C,p,p_holm
+hold-out block incl. excluded (97),97,19,Clinical,0.721,0.586-0.837,,,,
+hold-out block incl. excluded (97),97,19,Pathomics,0.635,0.515-0.753,,,,
+hold-out block incl. excluded (97),97,19,Combined,0.709,0.572-0.834,,,,
+hold-out block incl. excluded (97),97,19,,,,Combined vs Clinical,-0.012,0.693,0.693
+hold-out block incl. excluded (97),97,19,,,,Combined vs Pathomics,0.075,0.205,0.615
+hold-out block incl. excluded (97),97,19,,,,Pathomics vs Clinical,-0.086,0.286,0.615

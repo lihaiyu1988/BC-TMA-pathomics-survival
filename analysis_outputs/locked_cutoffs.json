@@ -27,6 +27,19 @@
   "cv_folds": 10,
   "matched_complexity_k": 3
  },
- "random_seed": 42,
- "split": "patient-level 7:3, train 194 / test 84"
+ "analysis_random_seed": {
+  "value": 42,
+  "used_for": "bootstrap resampling, cross-validation folds and the 1000 random splits of the analysis scripts"
+ },
+ "study_split": "original pipeline (original_notebooks/Step0): ten random patient-level partitions of the 291 patients with cores and follow-up (test fraction 0.33); partition RND-1 (the second) was used, required by the original protocol to be balanced in the clinical variables then available: 194 training and 97 hold-out patients; 13 hold-out patients were excluded before survival modeling because their H&E images were judged unusable on pathological review (clinical/clinical_excluded_holdout13.csv); the other 84 are in pipeline_outputs/sur.csv (test cohort)",
+ "encoder_checkpoints": {
+  "validation_set": "hold-out block (97 hold-out patients and the one training patient without a defined label); patch-level AUC computed after every epoch",
+  "epoch_0based": {
+   "resnet50": 1,
+   "resnet18": 5,
+   "densenet121": 2,
+   "CrossFormer": 9
+  },
+  "rule": "ResNet50: highest validation AUC (deployed); ResNet18, DenseNet121: as set in original_notebooks/Step1.2; CrossFormer: last completed epoch (10 of 16 planned)"
+ }
 }

@@ -1,0 +1,2 @@
+splits,C train mean,C test mean,difference mean,difference SD,difference 2.5th percentile,difference 97.5th percentile,share of splits with difference >= +0.124,share of splits with test C-index >= 0.807
+1000,0.698,0.707,0.009,0.083,-0.159,0.162,0.077,0.067
