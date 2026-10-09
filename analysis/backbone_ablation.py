@@ -28,7 +28,7 @@ def paired_p(dur, ra, rb, ev, nb=2000):
         if ev[b].sum() < 2: continue
         diffs.append(concordance_index(dur[b], -ra[b], ev[b]) - concordance_index(dur[b], -rb[b], ev[b]))
     diffs = np.array(diffs)
-    return max(2 * min((diffs <= 0).mean(), (diffs >= 0).mean()), 1.0 / nb), diffs.mean()
+    return min(1.0, max(2 * min((diffs <= 0).mean(), (diffs >= 0).mean()), 1.0 / nb)), diffs.mean()
 
 clin_tr = pd.read_csv(f'{DATA}/results/Clinical_cox_predictions_train.csv').set_index('ID')['expectation']
 clin_te = pd.read_csv(f'{DATA}/results/Clinical_cox_predictions_test.csv').set_index('ID')['expectation']

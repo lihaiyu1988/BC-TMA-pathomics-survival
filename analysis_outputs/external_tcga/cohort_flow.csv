@@ -1,0 +1,7 @@
+step,n
+TCGA-BRCA patients in the GDC clinical file and TCGA-CDR,1097
+women,1085
+no neoadjuvant therapy,1070
+no distant metastasis (M1 / stage IV excluded),1050
+AJCC pathologic stage I-III,1028
+overall-survival time > 0,1014

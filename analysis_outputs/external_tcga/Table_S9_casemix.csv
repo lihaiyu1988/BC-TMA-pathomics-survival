@@ -1,0 +1,29 @@
+﻿Characteristic,Development cohort (TMA),TCGA-BRCA
+Patients,278,1014
+"Age, years (mean ± SD)",54.7 ± 12.4,58.2 ± 13.2
+  T1,88 (31.7),268 (26.4)
+  T2,174 (62.6),593 (58.5)
+  T3,16 (5.8),130 (12.8)
+  T4,0 (0.0),23 (2.3)
+  N0,127 (45.7),492 (48.9)
+  N1,66 (23.7),341 (33.9)
+  N2,69 (24.8),109 (10.8)
+  N3,16 (5.8),65 (6.5)
+  Stage I,43 (15.5),181 (17.9)
+  Stage II,147 (52.9),597 (58.9)
+  Stage III,88 (31.7),236 (23.3)
+ER positive,181 (68.6),740 (76.4)
+PR positive,148 (55.8),644 (66.8)
+HER2 positive,63 (24.0),153 (17.2)
+Grade 3,64 (23.2),361 (37.8)
+Deaths,65 (23.4),123 (12.1)
+"Median follow-up, months (reverse Kaplan–Meier)",125.0,31.7
+Missing N,0,7
+Missing ER,14,46
+Missing PR,13,50
+Missing HER2,15,125
+Missing grade,2,58
+Period of surgery / diagnosis,2001–2003 and 2005–2007 (surgery),1988–2013 (diagnosis)
+AJCC edition,6th,6th 406; 7th 397; not recorded 131; 5th 54; 4th 21; 3rd 5
+Grade source,Pathology report (Nottingham),Central expert review (Nottingham components)
+Receptor status source,TMA IHC/FISH records and pathology reports,Reported by contributing sites

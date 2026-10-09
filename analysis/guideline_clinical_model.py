@@ -13,8 +13,7 @@ DATA = 'pipeline_outputs'; OUT = 'analysis_outputs'
 RNG = np.random.default_rng(42)
 cl = pd.read_csv(f'{OUT}/clinical_guideline_278.csv')
 cl['grade3'] = (cl['grade'] == 3).astype(float); cl.loc[cl['grade'].isna(), 'grade3'] = np.nan
-cl['HER2pos'] = cl['HER2_raw']
-cl['TMA_set'] = cl['set']
+cl['HER2pos'] = cl['HER2']          # distributed table: HER2 = positivity (FISH first, otherwise IHC 3+)
 sur = pd.read_csv(f'{DATA}/sur.csv').set_index('ID')
 scores = pd.read_csv(f'{DATA}/results/joinit_info.csv').set_index('ID')   # deployed expectation scores (Clinical, Pathomics, Combined)
 hr_te = {m: pd.read_csv(f'{DATA}/results/{m}_cox_predictions_test.csv').set_index('ID')['HR'] for m in ['Clinical', 'Pathomics', 'Combined']}
@@ -34,7 +33,7 @@ def paired_p(dur, ra, rb, ev, nb=2000):
         if ev[b].sum() < 2: continue
         diffs.append(concordance_index(dur[b], -ra[b], ev[b]) - concordance_index(dur[b], -rb[b], ev[b]))
     diffs = np.array(diffs)
-    return max(2 * min((diffs <= 0).mean(), (diffs >= 0).mean()), 1.0 / nb), diffs.mean()
+    return min(1.0, max(2 * min((diffs <= 0).mean(), (diffs >= 0).mean()), 1.0 / nb)), diffs.mean()
 
 # ------------------------------------------------------------------ extended Table 1
 def table1(df):

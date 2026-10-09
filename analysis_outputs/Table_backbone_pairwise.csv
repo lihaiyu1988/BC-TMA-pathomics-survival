@@ -1,12 +1,12 @@
 Comparison,"delta C (pathomics, test)",p
 ResNet50 | PLH only | k=3 | allIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,-0.017,0.225
-ResNet50 | BoW only | k=3 | allIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,0.0,2.0
+ResNet50 | BoW only | k=3 | allIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,0.0,1.0
 ResNet50 | PLH+BoW | CV | allIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,-0.066,0.196
 ResNet50 | PLH only | CV | allIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,-0.097,0.185
 ResNet50 | BoW only | CV | allIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,-0.066,0.188
-ResNet50 | PLH+BoW | k=3 | trainIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,0.001,1.206
+ResNet50 | PLH+BoW | k=3 | trainIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,0.001,1.0
 ResNet50 | PLH only | k=3 | trainIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,-0.016,0.264
-ResNet50 | BoW only | k=3 | trainIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,0.001,1.189
+ResNet50 | BoW only | k=3 | trainIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,0.001,1.0
 ResNet50 | PLH+BoW | CV | trainIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,-0.055,0.301
 ResNet50 | PLH only | CV | trainIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,-0.093,0.182
 ResNet50 | BoW only | CV | trainIDF vs ResNet50 | PLH+BoW | k=3 | allIDF,-0.055,0.293
