@@ -2,7 +2,7 @@
 
 Code, de-identified per-patient tables, locked cut-offs and analysis outputs accompanying the manuscript
 *A weakly supervised patch-to-slide deep pathomics framework for overall-survival prediction from H&E tissue-microarray histopathology in breast cancer* (Biomedical Signal Processing and Control, revised version).
-The version used for the revised manuscript is tagged `v1.2` (v1.0: pipeline outputs and analysis scripts; v1.1: TCGA-BRCA external validation; v1.2: the scripts of every remaining table, exact reproduction of the deployed features, the data and analyses of the 13 excluded hold-out patients and of every saved ResNet50 checkpoint, and corrections listed in the release notes).
+The version used for the revised manuscript (second revision) is tagged `v1.3` (v1.0: pipeline outputs and analysis scripts; v1.1: TCGA-BRCA external validation; v1.2: the scripts of every remaining table, exact reproduction of the deployed features, the data and analyses of the 13 excluded hold-out patients and of every saved ResNet50 checkpoint; v1.3: the trained encoder weights as release assets, with an inference script and checksums).
 
 ## Repository layout
 
@@ -14,14 +14,15 @@ The version used for the revised manuscript is tagged `v1.2` (v1.0: pipeline out
 | `clinical/clinical_excluded_holdout13.csv` | The same variables, with overall survival, for the 13 hold-out patients excluded before survival modeling because their H&E images were judged unusable on pathological review (`group` = excluded). |
 | `analysis/` | Open-source re-implementation of the downstream pipeline and every analysis of the paper (Python). |
 | `analysis_outputs/` | All tables (CSV) and data figures (PNG) produced by `analysis/` (see the mapping below), `document_frequencies_291.csv` (the fixed document-frequency vector of the BoW features) and `locked_cutoffs.json` (locked cut-offs, thresholds, selection settings, analysis seed and study split). |
+| `inference/` | Patch-level inference with the released encoder weights (`infer_patches.py`), the checksums of the weight files (`SHA256SUMS.txt`), nine validation-set example patches with their rows of the prediction file for a closed-loop check, and a README (release v1.3). |
 
-The trained encoder weights (`resnet50_CV1.pth`, `CrossFormer_CV1.pth`) and the inference script are available from the corresponding authors on request.
+The trained encoder weights are attached to release v1.3 as release assets: `resnet50_CV1_epoch2.pth` (the deployed encoder), `densenet121_CV1_epoch3.pth` and `resnet18_CV1_epoch6.pth` (encoder comparison), each the checkpoint saved by the training run, whose `model_state_dict` entry is the torchvision `state_dict` with a two-class output layer; SHA-256 checksums, the inference script and a closed-loop check are in `inference/` (see `inference/README.md`). The CrossFormer checkpoint is not included in the release. The tumor-region filtering that precedes inference belongs to the original preprocessing pipeline and is not re-implemented; no stain normalization was applied in the original pipeline, and the patches enter the encoder as tiled (`inference/README.md`).
 
 ## Study split and encoder data, as run by the original pipeline
 
 - `original_notebooks/Step0` generated ten random patient-level partitions of the 291 patients with annotated cores and survival follow-up (test fraction 0.33); the pipeline used the second, RND-1, with 194 training and 97 hold-out patients. As specified in the original protocol, the partition was required to be balanced in the clinical variables then available (age, examined and positive lymph nodes, T and N categories, AJCC stage, HER2 status, TMA set); `analysis_outputs/Table_split_balance_194_vs_97.csv` gives the tests for this partition (`analysis/holdout_sensitivity.py`).
 - 13 of the 97 hold-out patients were excluded before survival modeling because their H&E images were judged unusable on pathological review; their clinical variables and survival are in `clinical/clinical_excluded_holdout13.csv` and their slide features in `pipeline_outputs/features/path_features.csv`. The other 84 form the test cohort (`pipeline_outputs/sur.csv`). `analysis/holdout_sensitivity.py` applies the frozen models to all 97 hold-out patients (Supplementary Table S10).
-- The encoders were trained on the 193 training patients with a defined 5-year label; patients alive with less than 60 months of follow-up have no label. The validation set of encoder training was the hold-out set: in `pipeline_outputs/results/ALL_DL_PREDICTIONS.csv`, rows 1–56,499 are the training patches and the remaining 28,955 rows the validation patches of 98 patients (the 97 hold-out patients and the one training patient without a defined label). Patients without a defined label carry the placeholder `gt` = 1 in that file.
+- The encoders were trained on the 193 training patients with a defined 5-year label; patients alive with less than 60 months of follow-up have no label. The validation set of encoder training was the hold-out set: in `pipeline_outputs/results/ALL_DL_PREDICTIONS.csv`, rows 1–56,499 are the training patches and the remaining 28,955 rows the validation patches of 98 patients (the 97 hold-out patients and the one training patient without a defined label). Patients without a defined label carry the placeholder `gt` = 1 in that file. The training-patch rows of this file were recorded by the framework during the training epoch (model in training mode, online augmentation, weights still being updated) and are therefore not reproduced exactly by the released checkpoint in evaluation mode; the validation rows were computed after the epoch and are reproduced by the released checkpoint applied to the original patches (`inference/README.md`).
 - The framework computed the patch-level AUC of this validation set after every epoch. The deployed ResNet50 checkpoint (`Epoch-1`, 0-based, i.e. the second of 12 epochs) is the epoch with the highest validation AUC; ResNet18 and DenseNet121 use the epochs set in `original_notebooks/Step1.2` (`epoch_mapping`: 5 and 2, 0-based), and CrossFormer the last completed epoch (9, 0-based; training stopped after 10 of 16 planned epochs). `pipeline_outputs/results/resnet50_checkpoints.csv.gz` holds the patch predictions of all 12 ResNet50 checkpoints as written by the training framework (file paths replaced by patient IDs; epoch 1 equals `ALL_DL_PREDICTIONS.csv`), and `analysis/checkpoint_sensitivity.py` reruns the signature on each of them (Supplementary Table S11).
 
 ## Reproducing the analyses
@@ -96,7 +97,7 @@ Download Data S2 from the supplementary material of the article in a browser (sc
 ## Pipeline summary (Algorithm 1 of the paper)
 
 1. Patient-level 2:1 split of the original pipeline (see above): training cohort n = 194; hold-out block n = 97, of whom 13 were excluded for unusable images (test cohort n = 84).
-2. TMA cores tiled into 256 × 256 patches at 20×; background removal; Macenko normalization with one fixed reference; z-score.
+2. TMA cores tiled into 256 × 256 patches at 20×; background and non-tumor patches removed; no stain normalization; for the encoder, bilinear resize to 224 × 224 and ImageNet standardization.
 3. Weak label = patient 5-year overall-survival status (death ≤ 60 months vs survival > 60 months) inherited by every patch; encoder trained on training patients only, with the hold-out block as validation set (ResNet50 checkpoint = epoch with the highest validation AUC).
 4. Per-patient aggregation: PLH (fraction of patches per 0.01 probability bin + predicted-label bins, 103-d) and BoW (L2-normalized TF-IDF of the same bins, 103-d) → 206-d vector.
 5. Training-only feature selection: z-score → correlation filter |r| > 0.8 → univariable Cox p < 0.05 → elastic-net Cox (L1 ratio 0.1), matched complexity 3 features: `BoW_prob(0.50)`, `BoW_prob(0.58)`, `BoW_pred(1)`.
@@ -109,7 +110,7 @@ All tables are de-identified (study codes only). Patient-level clinical and surv
 
 ## Citation
 
-Please cite the paper (reference to be added after acceptance) and this repository (https://github.com/lihaiyu1988/BC-TMA-pathomics-survival, release v1.2).
+Please cite the paper (reference to be added after acceptance) and this repository (https://github.com/lihaiyu1988/BC-TMA-pathomics-survival, release v1.3).
 
 ## License
 
