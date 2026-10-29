@@ -82,7 +82,8 @@ def fig_patch_roc():
             fpr, tpr, _ = roc_curve(y, s); auc = roc_auc_score(y, s)
             boot_auc(y, s, nb=300)      # kept only so that the random-number stream, and hence the Table 6 CIs below, stay as published
             r2 = t2[(t2.Backbone == disp) & (t2.Cohort == c)].iloc[0]; assert round(auc, 3) == r2['AUC'], (disp, c)
-            ax.plot(fpr, tpr, color=COL[disp], label=f"{disp} {auc:.3f} ({r2['95% CI'].replace('-', '\u2013')})")
+            ci = r2['95% CI'].replace('-', '\u2013')   # en dash; kept outside the f-string (a backslash inside a replacement field needs Python >= 3.12)
+            ax.plot(fpr, tpr, color=COL[disp], label=f"{disp} {auc:.3f} ({ci})")
         roc_axes(ax); ax.set_title(title); fl.legend_below(ax, title='AUC (95% CI)')
     save(G, 'Figure2_patch_ROC')
 

@@ -19,7 +19,7 @@ not needed for inference. The CrossFormer checkpoint of the comparison is not in
 
 The encoders were trained and applied on the 256 × 256 patches as tiled from the scanned TMA slides: no stain
 normalization was applied in the original pipeline (the normalized patches displayed by `original_notebooks/Step0`
-were an illustration that the pipeline did not use), and the tumor-region filtering that precedes inference
+were an illustration that the pipeline did not use), and the patch filtering that precedes inference (background removal and the automated tissue classifier)
 (`original_notebooks/Step0.1`) is not re-implemented here. `infer_patches.py` applies a checkpoint to such patches with
 the evaluation transform of the original run (`viz/task.json`: input size 224 × 224, ImageNet normalization): the image
 is scaled to [0, 1], resized to 224 × 224 by bilinear interpolation without antialiasing
@@ -38,7 +38,7 @@ python inference/infer_patches.py --weights resnet50_CV1_epoch2.pth --arch resne
 ## Example patches and the two reference files
 
 `example_patches/` holds nine patches of the validation set of the original run (nine test-cohort patients, five of
-the six slides, as tiled), chosen to span the range of predicted probabilities.
+the six scanned slides, as tiled), chosen to span the range of predicted probabilities.
 
 * `example_predictions.tsv` holds the rows of these patches in the prediction file of the original run
   (`valid/Epoch-1.txt` of the training framework: path, probability of the predicted class, predicted label, label;
@@ -54,7 +54,7 @@ the six slides, as tiled), chosen to span the range of predicted probabilities.
   original run).
 
 * `example_predictions_checkpoint.csv` is the output of `infer_patches.py` with `resnet50_CV1_epoch2.pth` on these
-  patches (`fpath, label-1, pred_label`); `--verify-log inference/example_predictions_checkpoint.csv` should reproduce
+  patches (`fpath, label-1, pred_label`; paths written relative to `inference/`); `--verify-log inference/example_predictions_checkpoint.csv` should reproduce
   it to about 1e-4 (BLAS library, GPU, JPEG decoder) and checks the installation and the integrity of the weight
   file. `example_predictions_checkpoint.csv` was written on a machine other than the training workstation (torch 2.14.1, CPU); in that run the predicted class of all nine patches agreed with the prediction file and the probabilities differed from its three-decimal values by at most 0.0003.
 

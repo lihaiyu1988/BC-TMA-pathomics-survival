@@ -18,7 +18,7 @@ without antialiasing (torch.nn.functional.interpolate with align_corners=False, 
 the antialiased resize that torchvision applies to PIL images changes the probabilities by about 0.01 on average and
 does not reproduce the released predictions) and standardized with the ImageNet mean and standard deviation. No stain
 normalization is applied, because none was applied in the original pipeline: the patches enter the encoder as tiled.
-The tumor-region filtering of the original pipeline is not re-implemented here. With this transform the deployed
+The patch filtering of the original pipeline (background removal and the automated tissue classifier) is not re-implemented here. With this transform the deployed
 checkpoint reproduces the validation rows of pipeline_outputs/results/ALL_DL_PREDICTIONS.csv (inference/README.md).
 
 Usage
